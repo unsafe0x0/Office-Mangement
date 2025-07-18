@@ -27,6 +27,12 @@ enum TaskStatus {
   CANCELLED
 }
 
+enum ForWhom {
+  ALL
+  EMPLOYEE
+  ADMIN
+}
+
 model Admin {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   name           String
@@ -57,11 +63,9 @@ model Employee {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  attendance    Attendance[]
-  leaves        Leave[]
-  payrolls      Payroll[]
-  tasks         Task[]
-  notifications Notification[]
+  attendance Attendance[]
+  leaves     Leave[]
+  payrolls   Payroll[]
 }
 
 model Attendance {
@@ -102,22 +106,19 @@ model Payroll {
 
 model Task {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  employee    Employee   @relation(fields: [employeeId], references: [id])
-  employeeId  String
   title       String
   description String?
   status      TaskStatus @default(PENDING)
   dueDate     DateTime?
+  employeeIds String[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 }
 
 model Notification {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  employee   Employee @relation(fields: [employeeId], references: [id])
-  employeeId String
-  message    String
-  read       Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  message   String
+  forWhom   ForWhom  @default(ALL)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

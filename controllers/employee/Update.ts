@@ -1,6 +1,7 @@
 import DbClient from "../../prisma/DbCLient";
 import bcrypt from "bcryptjs";
 import type { Request, Response } from "express";
+import { uploadImage } from "../../utils/Cloudinary";
 
 interface AuthenticatedRequest extends Request {
   user?: { id: string };
@@ -27,7 +28,11 @@ const Update = async (req: AuthenticatedRequest, res: Response) => {
 
     if (name) updateData.name = name;
     if (email) updateData.email = email;
-    if (profilePicture) updateData.profilePicture = profilePicture;
+    if (profilePicture) {
+      const fileName = `${Date.now()}-${profilePicture.originalname}`;
+      const uploadedImage = await uploadImage(profilePicture, fileName);
+      updateData.profilePicture = uploadedImage.url;
+    }
     if (phone) updateData.phone = phone;
     if (address) updateData.address = address;
 
