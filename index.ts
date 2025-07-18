@@ -1,19 +1,19 @@
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
+import morgan from "morgan";
 import adminRoutes from "./routes/AdminRoutes";
 import employeeRoutes from "./routes/EmployeeRoutes";
 import taskRoutes from "./routes/TaskRoutes";
 import payrollRoutes from "./routes/PayrollRoutes";
 import notificationRoutes from "./routes/NotificationRoutes";
 import leaveRoutes from "./routes/LeaveRoutes";
-
-dotenv.config();
+import attendanceRoutes from "./routes/AttendanceRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(morgan("dev"));
 app.use(helmet());
 app.use(express.json());
 app.use(
@@ -36,6 +36,7 @@ app.use("/task", taskRoutes);
 app.use("/payroll", payrollRoutes);
 app.use("/notification", notificationRoutes);
 app.use("/leave", leaveRoutes);
+app.use("/attendance", attendanceRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on PORT:${PORT}`);

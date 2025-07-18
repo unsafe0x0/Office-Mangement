@@ -5,17 +5,16 @@ interface AuthenticatedRequest extends Request {
   user?: { id: string; role: string };
 }
 
-const GetInfo = async (req: AuthenticatedRequest, res: Response) => {
+const AllEmployee = async (req: AuthenticatedRequest, res: Response) => {
   const id = req.user?.id;
   const role = req.user?.role;
 
-  if (!id || role !== "employee") {
+  if (!id || role !== "admin") {
     return res.status(400).json({ error: "Unauthorized access." });
   }
 
   try {
-    const employee = await DbClient.employee.findUnique({
-      where: { id },
+    const employees = await DbClient.employee.findMany({
       select: {
         id: true,
         name: true,
@@ -32,53 +31,37 @@ const GetInfo = async (req: AuthenticatedRequest, res: Response) => {
         leaves: true,
         payrolls: true,
       },
+      orderBy: { name: "asc" },
     });
 
-    if (!employee) {
-      return res.status(404).json({ error: "Employee not found." });
-    }
-
-    const tasks = await DbClient.task.findMany({
-      where: {
-        employeeIds: {
-          has: id,
-        },
-      },
+    const allTasks = await DbClient.task.findMany({
       select: {
         id: true,
         title: true,
         description: true,
         status: true,
         dueDate: true,
+        employeeIds: true,
         createdAt: true,
         updatedAt: true,
       },
     });
 
-    const notifications = await DbClient.notification.findMany({
-      where: {
-        forWhom: {
-          in: ["ALL", "EMPLOYEE"],
-        },
-      },
-      select: {
-        id: true,
-        message: true,
-        createdAt: true,
-      },
+    const data = employees.map((employee) => {
+      const tasks = allTasks.filter((task) =>
+        task.employeeIds.includes(employee.id)
+      );
+      return {
+        ...employee,
+        tasks,
+      };
     });
-
-    const data = {
-      employee,
-      tasks,
-      notifications,
-    };
 
     return res.status(200).json(data);
   } catch (error) {
-    console.error("Get employee info error:", error);
+    console.error("Get all employees error:", error);
     return res.status(500).json({ error: "Internal server error." });
   }
 };
 
-export default GetInfo;
+export default AllEmployee;

@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { Request, Response } from "express";
 
-const Login = async (req: Request, res: Response) => {
+const AdminLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -11,21 +11,21 @@ const Login = async (req: Request, res: Response) => {
   }
 
   try {
-    const employee = await DbClient.employee.findUnique({
+    const admin = await DbClient.admin.findUnique({
       where: { email },
     });
 
-    if (!employee) {
+    if (!admin) {
       return res.status(401).json({ error: "Invalid email or password." });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, employee.password);
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid email or password." });
     }
 
     const token = jwt.sign(
-      { id: employee.id, role: employee.role },
+      { id: admin.id, role: admin.role },
       process.env.JWT_SECRET!,
       {
         expiresIn: "7d",
@@ -37,9 +37,9 @@ const Login = async (req: Request, res: Response) => {
       token,
     });
   } catch (error) {
-    console.error("Employee login error:", error);
+    console.error("Admin login error:", error);
     return res.status(500).json({ error: "Internal server error." });
   }
 };
 
-export default Login;
+export default AdminLogin;

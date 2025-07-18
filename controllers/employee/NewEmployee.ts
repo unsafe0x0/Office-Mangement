@@ -7,7 +7,7 @@ interface AuthenticatedRequest extends Request {
   user?: { id: string; role: string };
 }
 
-const Register = async (req: AuthenticatedRequest, res: Response) => {
+const NewEmployee = async (req: AuthenticatedRequest, res: Response) => {
   const {
     name,
     email,
@@ -72,4 +72,4 @@ const Register = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export default Register;
+export default NewEmployee;

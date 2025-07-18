@@ -5,10 +5,10 @@ import DeleteTask from "../controllers/task/DeleteTask";
 
 import AuthMiddleware from "../middleware/AuthMiddleware";
 
-const router = Router();
+const taskRoutes = Router();
 
-router.post("/new", AuthMiddleware, NewTask);
-router.put("/update", AuthMiddleware, UpdateTask);
-router.delete("/delete", AuthMiddleware, DeleteTask);
+taskRoutes.post("/new", AuthMiddleware, NewTask);
+taskRoutes.put("/update", AuthMiddleware, UpdateTask);
+taskRoutes.delete("/delete", AuthMiddleware, DeleteTask);
 
-export default router;
+export default taskRoutes;

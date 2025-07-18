@@ -12,7 +12,7 @@ const MarkAttendance = async (req: AuthenticatedRequest, res: Response) => {
     return res.status(400).json({ error: "Unauthorized access." });
   }
 
-  const { employeeId } = req.body;
+  const { employeeId, status } = req.body;
 
   try {
     const employee = await DbClient.employee.findUnique({
@@ -27,7 +27,7 @@ const MarkAttendance = async (req: AuthenticatedRequest, res: Response) => {
       data: {
         employeeId,
         date: new Date(),
-        status: "PRESENT",
+        status: status.toUpperCase(),
       },
     });
 

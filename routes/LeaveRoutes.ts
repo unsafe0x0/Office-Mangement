@@ -5,10 +5,10 @@ import DeleteLeave from "../controllers/leave/DeleteLeave";
 
 import AuthMiddleware from "../middleware/AuthMiddleware";
 
-const router = Router();
+const leaveRoutes = Router();
 
-router.post("/new", AuthMiddleware, NewLeave);
-router.put("/update", AuthMiddleware, UpdateLeave);
-router.delete("/delete", AuthMiddleware, DeleteLeave);
+leaveRoutes.post("/new", AuthMiddleware, NewLeave);
+leaveRoutes.put("/update", AuthMiddleware, UpdateLeave);
+leaveRoutes.delete("/delete", AuthMiddleware, DeleteLeave);
 
-export default router;
+export default leaveRoutes;

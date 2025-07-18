@@ -7,7 +7,7 @@ interface AuthenticatedRequest extends Request {
   user?: { id: string };
 }
 
-const Update = async (req: AuthenticatedRequest, res: Response) => {
+const UpdateEmployee = async (req: AuthenticatedRequest, res: Response) => {
   const { name, email, password, profilePicture, phone, address } = req.body;
   const id = req.user?.id;
 
@@ -54,4 +54,4 @@ const Update = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export default Update;
+export default UpdateEmployee;

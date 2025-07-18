@@ -5,10 +5,10 @@ import DeleteNotification from "../controllers/notification/DeleteNotification";
 
 import AuthMiddleware from "../middleware/AuthMiddleware";
 
-const router = Router();
+const notificationRoutes = Router();
 
-router.post("/new", AuthMiddleware, NewNotification);
-router.put("/update", AuthMiddleware, UpdateNotification);
-router.delete("/delete", AuthMiddleware, DeleteNotification);
+notificationRoutes.post("/new", AuthMiddleware, NewNotification);
+notificationRoutes.put("/update", AuthMiddleware, UpdateNotification);
+notificationRoutes.delete("/delete", AuthMiddleware, DeleteNotification);
 
-export default router;
+export default notificationRoutes;

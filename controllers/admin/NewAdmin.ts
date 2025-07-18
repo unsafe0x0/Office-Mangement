@@ -2,7 +2,7 @@ import DbClient from "../../prisma/DbCLient";
 import bcrypt from "bcryptjs";
 import type { Request, Response } from "express";
 
-const Register = async (req: Request, res: Response) => {
+const NewAdmin = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -37,4 +37,4 @@ const Register = async (req: Request, res: Response) => {
   }
 };
 
-export default Register;
+export default NewAdmin;

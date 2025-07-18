@@ -1,18 +1,18 @@
 import { Router } from "express";
-import Login from "../controllers/admin/Login";
-import Register from "../controllers/admin/Register";
-import Update from "../controllers/admin/Update";
-import GetAll from "../controllers/employee/GetAll";
-import DeleteEmployee from "../controllers/employee/DeleteEmployee";
+import AdminLogin from "../controllers/admin/AdminLogin";
+import NewAdmin from "../controllers/admin/NewAdmin";
+import UpdateAdmin from "../controllers/admin/UpdateAdmin";
+import DeleteAdmin from "../controllers/admin/DeleteAdmin";
+import AdminDashboard from "../controllers/admin/AdminDashboard";
 
 import AuthMiddleware from "../middleware/AuthMiddleware";
 
-const router = Router();
+const adminRoutes = Router();
 
-router.post("/login", Login);
-router.post("/register", Register);
-router.put("/update", AuthMiddleware, Update);
-router.get("/employees", AuthMiddleware, GetAll);
-router.delete("/employees/:id", AuthMiddleware, DeleteEmployee);
+adminRoutes.post("/login", AdminLogin);
+adminRoutes.post("/register", NewAdmin);
+adminRoutes.put("/update", AuthMiddleware, UpdateAdmin);
+adminRoutes.delete("/delete", AuthMiddleware, DeleteAdmin);
+adminRoutes.get("/dashboard", AuthMiddleware, AdminDashboard);
 
-export default router;
+export default adminRoutes;

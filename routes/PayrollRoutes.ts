@@ -5,10 +5,10 @@ import DeletePayroll from "../controllers/payroll/DeletePayroll";
 
 import AuthMiddleware from "../middleware/AuthMiddleware";
 
-const router = Router();
+const payrollRoutes = Router();
 
-router.post("/new", AuthMiddleware, NewPayroll);
-router.put("/update", AuthMiddleware, UpdatePayroll);
-router.delete("/delete", AuthMiddleware, DeletePayroll);
+payrollRoutes.post("/new", AuthMiddleware, NewPayroll);
+payrollRoutes.put("/update", AuthMiddleware, UpdatePayroll);
+payrollRoutes.delete("/delete", AuthMiddleware, DeletePayroll);
 
-export default router;
+export default payrollRoutes;
