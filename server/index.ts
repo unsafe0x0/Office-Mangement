@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import adminRoutes from "./routes/AdminRoutes";
 import employeeRoutes from "./routes/EmployeeRoutes";
 import taskRoutes from "./routes/TaskRoutes";
@@ -10,8 +9,6 @@ import payrollRoutes from "./routes/PayrollRoutes";
 import notificationRoutes from "./routes/NotificationRoutes";
 import leaveRoutes from "./routes/LeaveRoutes";
 import attendanceRoutes from "./routes/AttendanceRoutes";
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,7 +18,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: "http://localhost:3000",
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
