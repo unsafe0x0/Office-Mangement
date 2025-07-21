@@ -9,7 +9,8 @@ const AdminDashboard = async (req: AuthenticatedRequest, res: Response) => {
   const id = req.user?.id;
   const role = req.user?.role;
 
-  if (!id || role !== "admin") {
+  if (!id || role !== "ADMIN") {
+    console.error("Unauthorized access attempt by user:", req.user);
     return res.status(400).json({ error: "Unauthorized access." });
   }
 

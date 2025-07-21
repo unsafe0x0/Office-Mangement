@@ -9,7 +9,7 @@ const EmployeeInfo = async (req: AuthenticatedRequest, res: Response) => {
   const id = req.user?.id;
   const role = req.user?.role;
 
-  if (!id || role !== "employee") {
+  if (!id || role !== "EMPLOYEE") {
     return res.status(400).json({ error: "Unauthorized access." });
   }
 

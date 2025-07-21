@@ -23,7 +23,7 @@ const NewEmployee = async (req: AuthenticatedRequest, res: Response) => {
   } = req.body;
   const role = req.user?.role;
 
-  if (!role || role !== "admin") {
+  if (!role || role !== "ADMIN") {
     return res.status(403).json({ error: "Unauthorized access." });
   }
 

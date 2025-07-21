@@ -45,7 +45,7 @@ const Login: React.FC = () => {
     onSuccess: (data) => {
       toast.success(`Welcome back, ${loginType}!`);
       SetCookie(data.token);
-      router.push(`/dashboard`);
+      router.push(`/${loginType}`);
     },
     onError: (error) => {
       console.error("Login error:", error.message);
@@ -66,25 +66,23 @@ const Login: React.FC = () => {
             Office Management Login
           </h1>
 
-          <div className="flex mb-6 bg-neutral-800 rounded p-1">
+          <div className="flex mb-6 bg-neutral-800/70 rounded p-1">
             <button
               onClick={() => setLoginType("employee")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded transition-colors ${
-                loginType === "employee"
-                  ? "bg-blue-600 text-white"
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded transition-colors ${loginType === "employee"
+                  ? "bg-blue-500 text-white"
                   : "text-neutral-300 hover:text-neutral-100"
-              }`}
+                }`}
             >
               <User size={18} />
               Employee
             </button>
             <button
               onClick={() => setLoginType("admin")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded transition-colors ${
-                loginType === "admin"
-                  ? "bg-blue-600 text-white"
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded transition-colors ${loginType === "admin"
+                  ? "bg-blue-500 text-white"
                   : "text-neutral-300 hover:text-neutral-100"
-              }`}
+                }`}
             >
               <Shield size={18} />
               Admin
@@ -109,7 +107,7 @@ const Login: React.FC = () => {
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-neutral-800 border border-neutral-700 rounded text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 bg-neutral-800/70 border border-neutral-700 rounded text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter your email"
                   required
                 />
@@ -133,7 +131,7 @@ const Login: React.FC = () => {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-2 bg-neutral-800 border border-neutral-700 rounded text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-12 py-2 bg-neutral-800/70 border border-neutral-700 rounded text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter your password"
                   required
                 />
@@ -149,14 +147,13 @@ const Login: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-normal py-2 px-4 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-neutral-900 cursor-pointer"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-normal py-2 px-4 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-neutral-900 cursor-pointer"
               disabled={loginMutation.isPending}
             >
               {loginMutation.isPending
                 ? "Signing in..."
-                : `Sign in as ${
-                    loginType === "employee" ? "Employee" : "Admin"
-                  }`}
+                : `Sign in as ${loginType === "employee" ? "Employee" : "Admin"
+                }`}
             </button>
           </form>
 
