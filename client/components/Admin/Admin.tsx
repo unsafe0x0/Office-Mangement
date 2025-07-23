@@ -5,6 +5,9 @@ import GetCookie from "@/utils/GetCookie";
 import { useQuery } from "@tanstack/react-query";
 import Sidebar from "./Sidebar";
 import Dashboard from "./Dashboard";
+import Employees from "./Employees";
+import Leaves from "./Leaves";
+import Notifications from "./Notifications";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -71,6 +74,134 @@ const Admin = () => {
   const totalTasks = data.data.tasks?.length || 0;
   const totalNotifications = data.data.notifications?.length || 0;
 
+  const employees = [
+    {
+      name: "John Doe",
+      position: "Software Engineer",
+      department: "Engineering",
+      email: "john.doe@example.com",
+      profilePictureUrl: "/placeholder.png",
+      joinDate: "2023-01-15",
+      isActive: true
+    },
+    {
+      name: "Jane Smith",
+      position: "Product Manager",
+      department: "Product",
+      email: "jane.smith@example.com",
+      profilePictureUrl: "/placeholder.png",
+      joinDate: "2023-02-20",
+      isActive: true
+    },
+    {
+      name: "Mike Johnson",
+      position: "UX Designer",
+      department: "Design",
+      email: "mike.johnson@example.com",
+      profilePictureUrl: "/placeholder.png",
+      joinDate: "2023-01-15",
+      isActive: false
+    },
+    {
+      name: "Emily Brown",
+      position: "HR Specialist",
+      department: "Human Resources",
+      email: "emily.brown@example.com",
+      profilePictureUrl: "/placeholder.png",
+      joinDate: "2023-03-10",
+      isActive: true
+    },
+    {
+      name: "Chris Lee",
+      position: "QA Engineer",
+      department: "Quality Assurance",
+      email: "chris.lee@example.com",
+      profilePictureUrl: "/placeholder.png",
+      joinDate: "2023-04-05",
+      isActive: true
+    },
+    {
+      name: "Sara Wilson",
+      position: "Marketing Coordinator",
+      department: "Marketing",
+      email: "sara.wilson@example.com",
+      profilePictureUrl: "/placeholder.png",
+      joinDate: "2023-05-12",
+      isActive: false
+    }
+  ];
+
+  const leaves = [
+    {
+      employeeName: "John Doe",
+      profilePictureUrl: "/placeholder.png",
+      startDate: "2023-10-01",
+      endDate: "2023-10-05",
+      reason: "Medical Leave",
+      status: "Approved"
+    },
+    {
+      employeeName: "Jane Smith",
+      profilePictureUrl: "/placeholder.png",
+      startDate: "2023-10-10",
+      endDate: "2023-10-12",
+      reason: "Vacation",
+      status: "Pending"
+    },
+    {
+      employeeName: "Mike Johnson",
+      profilePictureUrl: "/placeholder.png",
+      startDate: "2023-09-20",
+      endDate: "2023-09-22",
+      reason: "Personal Work",
+      status: "Rejected"
+    },
+    {
+      employeeName: "Emily Brown",
+      profilePictureUrl: "/placeholder.png",
+      startDate: "2023-11-01",
+      endDate: "2023-11-03",
+      reason: "Conference",
+      status: "Approved"
+    },
+    {
+      employeeName: "Chris Lee",
+      profilePictureUrl: "/placeholder.png",
+      startDate: "2023-12-15",
+      endDate: "2023-12-20",
+      reason: "Family Event",
+      status: "Pending"
+    },
+  ];
+
+  const notifications = [
+    {
+      message: "Server maintenance scheduled for tonight.",
+      forWhom: "All Employees",
+      createdAt: "2023-10-01T12:00:00Z"
+    },
+    {
+      message: "New policy update available in the portal.",
+      forWhom: "HR Team",
+      createdAt: "2023-10-02T09:00:00Z"
+    },
+    {
+      message: "Quarterly meeting on Friday at 3 PM.",
+      forWhom: "All Employees",
+      createdAt: "2023-10-03T15:30:00Z"
+    },
+    {
+      message: "Submit your timesheets by end of day.",
+      forWhom: "Engineering",
+      createdAt: "2023-10-04T10:15:00Z"
+    },
+    {
+      message: "Welcome our new team member, Alex Kim!",
+      forWhom: "Product",
+      createdAt: "2023-10-05T08:45:00Z"
+    }
+  ];
+
   return (
     <main className="flex flex-col md:flex-row h-screen fixed w-full">
       <Sidebar
@@ -80,8 +211,12 @@ const Admin = () => {
         open={sidebarOpen}
         setOpen={setSidebarOpen}
       />
-      <section className="flex-1 p-4 overflow-y-scroll">
-        {activeTab === "Dashboard" && <Dashboard totalEmployees={totalEmployees} totalLeaves={totalLeaves} totalTasks={totalTasks} totalNotifications={totalNotifications} />}
+      <section className="flex-1 p-4 overflow-y-scroll w-full">
+        {activeTab === "Dashboard" && <Dashboard totalEmployees={totalEmployees} totalLeaves={totalLeaves} totalTasks={totalTasks} totalNotifications={totalNotifications}
+          employees={employees} leaves={leaves} notifications={notifications} />}
+        {activeTab === "Employees" && <Employees employees={employees} />}
+        {activeTab === "Leaves" && <Leaves leaves={leaves} />}
+        {activeTab === "Notifications" && <Notifications notifications={notifications} />}
       </section>
     </main>
   );
