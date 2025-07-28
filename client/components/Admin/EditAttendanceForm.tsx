@@ -14,7 +14,7 @@ import GetCookie from "@/utils/GetCookie";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-interface AddAttendanceFormProps {
+interface EditAttendanceFormProps {
     isOpen: boolean;
     onClose: () => void;
     employee: {
@@ -25,89 +25,89 @@ interface AddAttendanceFormProps {
         department?: string;
         profilePicture?: string;
     };
+    attendance: {
+        id: string;
+        status: "PRESENT" | "ABSENT" | "HALF_DAY" | "REMOTE";
+        date: string;
+    };
 }
 
-interface AttendanceFormData {
+interface EditAttendanceFormData {
     employeeId: string;
-    employeeEmail: string;
-    date: string;
+    attendanceId: string;
     status: "PRESENT" | "ABSENT" | "HALF_DAY" | "REMOTE";
 }
 
-const AddAttendanceForm: React.FC<AddAttendanceFormProps> = ({ isOpen, onClose, employee }) => {
-    const [formData, setFormData] = useState<AttendanceFormData>({
+const EditAttendanceForm: React.FC<EditAttendanceFormProps> = ({ isOpen, onClose, employee, attendance }) => {
+    const [formData, setFormData] = useState<EditAttendanceFormData>({
         employeeId: employee.id,
-        employeeEmail: employee.email,
-        date: "",
-        status: "PRESENT",
+        attendanceId: attendance.id,
+        status: attendance.status,
     });
 
     const queryClient = useQueryClient();
 
-    const addAttendanceMutation = useMutation({
-        mutationFn: async (data: AttendanceFormData) => {
+    const updateAttendanceMutation = useMutation({
+        mutationFn: async (data: EditAttendanceFormData) => {
             if (!API_URL) {
                 throw new Error("NEXT_PUBLIC_API_URL is not defined.");
             }
 
-            const response = await fetch(`${API_URL}/attendance/mark`, {
-                method: "POST",
+            const response = await fetch(`${API_URL}/attendance/update`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${GetCookie()}`,
                 },
-                body: JSON.stringify({
-                    employeeId: data.employeeId,
-                    date: data.date,
-                    status: data.status,
-                }),
+                body: JSON.stringify(data),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to add attendance");
+                throw new Error(errorData.message || "Failed to update attendance");
             }
 
             return response.json();
         },
         onSuccess: () => {
-            toast.success("Attendance marked successfully!");
+            toast.success("Attendance updated successfully!");
             queryClient.invalidateQueries({ queryKey: ["attendance"] });
             handleClose();
         },
         onError: (error) => {
-            console.error("Add attendance error:", error.message);
-            toast.error(`Failed to mark attendance: ${error.message}`);
+            console.error("Update attendance error:", error.message);
+            toast.error(`Failed to update attendance: ${error.message}`);
         },
     });
 
-    const handleInputChange = (field: keyof AttendanceFormData, value: string) => {
+    const handleInputChange = (field: keyof EditAttendanceFormData, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
-
-
 
     const handleClose = () => {
         setFormData({
             employeeId: employee.id,
-            employeeEmail: employee.email,
-            date: "",
-            status: "PRESENT",
+            attendanceId: attendance.id,
+            status: attendance.status,
         });
         onClose();
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        addAttendanceMutation.mutate(formData);
+        updateAttendanceMutation.mutate(formData);
     };
 
+    // Update form data when attendance prop changes
     useEffect(() => {
-        if (isOpen && !formData.date) {
-            const today = new Date().toISOString().split('T')[0];
-            setFormData(prev => ({ ...prev, date: today }));
+        if (attendance) {
+            setFormData({
+                employeeId: employee.id,
+                attendanceId: attendance.id,
+                status: attendance.status,
+            });
         }
-    }, [isOpen, formData.date]);
+    }, [attendance, employee.id]);
 
     if (!isOpen) return null;
 
@@ -122,9 +122,10 @@ const AddAttendanceForm: React.FC<AddAttendanceFormProps> = ({ isOpen, onClose, 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-neutral-900 rounded-md p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
                 <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-neutral-100">Mark Attendance</h2>
+                    <h2 className="text-2xl font-bold text-neutral-100">Edit Attendance</h2>
                 </div>
 
+                {/* Employee Info Card */}
                 <div className="bg-neutral-800/50 border border-neutral-700 rounded-md p-4 mb-6">
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-full overflow-hidden border border-neutral-600">
@@ -145,6 +146,15 @@ const AddAttendanceForm: React.FC<AddAttendanceFormProps> = ({ isOpen, onClose, 
                     </div>
                 </div>
 
+                {/* Date Display */}
+                <div className="bg-neutral-800/30 border border-neutral-700 rounded-md p-4 mb-6">
+                    <div className="flex items-center gap-2">
+                        <Clock size={18} className="text-neutral-400" />
+                        <span className="text-neutral-300 font-normal">Date:</span>
+                        <span className="text-neutral-100">{new Date(attendance.date).toLocaleDateString()}</span>
+                    </div>
+                </div>
+
                 <form onSubmit={handleSubmit} className="space-y-6">
 
                     <div>
@@ -160,15 +170,16 @@ const AddAttendanceForm: React.FC<AddAttendanceFormProps> = ({ isOpen, onClose, 
                                         key={option.value}
                                         type="button"
                                         onClick={() => handleInputChange("status", option.value)}
-                                        className={`p-3 rounded border transition-all ${formData.status === option.value
+                                        className={`p-3 rounded border transition-all ${
+                                            formData.status === option.value
                                                 ? "border-blue-500 bg-blue-500/10"
                                                 : "border-neutral-700 bg-neutral-800/70 hover:border-neutral-600"
-                                            }`}
+                                        }`}
                                     >
                                         <div className="flex flex-col items-center gap-2">
-                                            <IconComponent
-                                                size={20}
-                                                className={option.color}
+                                            <IconComponent 
+                                                size={20} 
+                                                className={option.color} 
                                             />
                                             <span className="text-sm text-neutral-300">
                                                 {option.label}
@@ -183,10 +194,10 @@ const AddAttendanceForm: React.FC<AddAttendanceFormProps> = ({ isOpen, onClose, 
                     <div className="flex flex-col md:flex-row gap-4 pt-4">
                         <Button
                             type="submit"
-                            disabled={addAttendanceMutation.isPending}
                             className="w-full"
+                            disabled={updateAttendanceMutation.isPending}
                         >
-                            {addAttendanceMutation.isPending ? "Marking Attendance..." : "Mark"}
+                            {updateAttendanceMutation.isPending ? "Updating Attendance..." : "Update"}
                         </Button>
                         <RedButton
                             type="button"
@@ -202,4 +213,4 @@ const AddAttendanceForm: React.FC<AddAttendanceFormProps> = ({ isOpen, onClose, 
     );
 };
 
-export default AddAttendanceForm;
+export default EditAttendanceForm;

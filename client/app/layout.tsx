@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Raleway, Noto_Sans } from "next/font/google";
+import { Raleway, Public_Sans } from "next/font/google";
 import "./globals.css";
 import TanStackProvider from "@/context/QueryContext";
 import ToastProvider from "@/context/ToastProvider";
@@ -9,7 +9,8 @@ const headingFont = Raleway({
   subsets: ["latin"],
 });
 
-const bodyFont = Noto_Sans({
+const bodyFont = Public_Sans({
+  weight: ["400"],
   variable: "--font-body",
   subsets: ["latin"],
 });

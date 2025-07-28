@@ -20,7 +20,7 @@ const NewTask = async (req: AuthenticatedRequest, res: Response) => {
         title,
         description,
         status,
-        dueDate,
+        dueDate: new Date(dueDate),
         employeeIds,
       },
     });

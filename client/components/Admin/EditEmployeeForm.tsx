@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     User,
     Mail,
@@ -21,12 +21,26 @@ import GetCookie from "@/utils/GetCookie";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-interface AddEmployeeFormProps {
+interface EditEmployeeFormProps {
     isOpen: boolean;
     onClose: () => void;
+    employee: {
+        id: string;
+        name: string;
+        email: string;
+        position?: string;
+        department?: string;
+        phone?: string;
+        address?: string;
+        dateOfJoining?: string;
+        dateOfBirth?: string;
+        salary?: number;
+        profilePicture?: string;
+    };
 }
 
 interface EmployeeFormData {
+    employeeId: string;
     name: string;
     email: string;
     password: string;
@@ -40,8 +54,9 @@ interface EmployeeFormData {
     profilePicture: File | null;
 }
 
-const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose }) => {
+const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({ isOpen, onClose, employee }) => {
     const [formData, setFormData] = useState<EmployeeFormData>({
+        employeeId: employee.id,
         name: "",
         email: "",
         password: "",
@@ -59,16 +74,39 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose }) =>
 
     const queryClient = useQueryClient();
 
-    const addEmployeeMutation = useMutation({
+    useEffect(() => {
+        if (employee) {
+            setFormData({
+                employeeId: employee.id || "",
+                name: employee.name || "",
+                email: employee.email || "",
+                password: "",
+                position: employee.position || "",
+                department: employee.department || "",
+                phone: employee.phone || "",
+                address: employee.address || "",
+                dateOfJoining: employee.dateOfJoining ? employee.dateOfJoining.slice(0, 10) : "",
+                dateOfBirth: employee.dateOfBirth ? employee.dateOfBirth.slice(0, 10) : "",
+                salary: employee.salary ? employee.salary.toString() : "",
+                profilePicture: null,
+            });
+            setPreviewImage(employee.profilePicture || null);
+        }
+    }, [employee]);
+
+    const updateEmployeeMutation = useMutation({
         mutationFn: async (data: EmployeeFormData) => {
             if (!API_URL) {
                 throw new Error("NEXT_PUBLIC_API_URL is not defined.");
             }
 
             const formDataToSend = new FormData();
+            formDataToSend.append("employeeId", data.employeeId);
             formDataToSend.append("name", data.name);
             formDataToSend.append("email", data.email);
-            formDataToSend.append("password", data.password);
+            if (data.password) {
+                formDataToSend.append("password", data.password);
+            }
             formDataToSend.append("position", data.position);
             formDataToSend.append("department", data.department);
             formDataToSend.append("phone", data.phone);
@@ -81,29 +119,29 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose }) =>
                 formDataToSend.append("profilePicture", data.profilePicture);
             }
 
-            const response = await fetch(`${API_URL}/employee/register`, {
+            const response = await fetch(`${API_URL}/employee/update`, {
                 headers: {
                     "Authorization": `Bearer ${GetCookie()}`,
                 },
-                method: "POST",
+                method: "PUT",
                 body: formDataToSend,
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to add employee");
+                throw new Error(errorData.message || "Failed to update employee");
             }
 
             return response.json();
         },
         onSuccess: () => {
-            toast.success("Employee added successfully!");
+            toast.success("Employee updated successfully!");
             queryClient.invalidateQueries({ queryKey: ["employees"] });
             handleClose();
         },
         onError: (error) => {
-            console.error("Add employee error:", error.message);
-            toast.error(`Failed to add employee: ${error.message}`);
+            console.error("Update employee error:", error.message);
+            toast.error(`Failed to update employee: ${error.message}`);
         },
     });
 
@@ -125,6 +163,7 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose }) =>
 
     const handleClose = () => {
         setFormData({
+            employeeId: employee.id,
             name: "",
             email: "",
             password: "",
@@ -144,7 +183,7 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose }) =>
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        addEmployeeMutation.mutate(formData);
+        updateEmployeeMutation.mutate(formData);
     };
 
     if (!isOpen) return null;
@@ -153,7 +192,7 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose }) =>
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-neutral-900 rounded-md p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-neutral-100">Add New Employee</h2>
+                    <h2 className="text-2xl font-bold text-neutral-100">Edit Employee</h2>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -224,7 +263,7 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose }) =>
                     <div>
                         <label className="flex items-center gap-2 text-base font-normal text-neutral-300 mb-2">
                             <Lock size={18} />
-                            Password
+                            Password (leave blank to keep current)
                         </label>
                         <div className="relative">
                             <input
@@ -232,8 +271,7 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose }) =>
                                 value={formData.password}
                                 onChange={(e) => handleInputChange("password", e.target.value)}
                                 className="w-full px-3 py-2 bg-neutral-800/70 border border-neutral-700 rounded text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Enter password"
-                                required
+                                placeholder="Enter new password (optional)"
                             />
                             <button
                                 type="button"
@@ -349,10 +387,10 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose }) =>
                     <div className="flex flex-col md:flex-row gap-4 mt-4 w-full">
                         <Button
                             type="submit"
-                            disabled={addEmployeeMutation.isPending}
+                            disabled={updateEmployeeMutation.isPending}
                             className="w-full"
                         >
-                            {addEmployeeMutation.isPending ? "Adding Employee..." : "Add Employee"}
+                            {updateEmployeeMutation.isPending ? "Updating Employee..." : "Update Employee"}
                         </Button>
                         <RedButton
                             type="button"
@@ -368,4 +406,4 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose }) =>
     );
 };
 
-export default AddEmployeeForm;
+export default EditEmployeeForm; 

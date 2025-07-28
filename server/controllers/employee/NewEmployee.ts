@@ -5,6 +5,7 @@ import { uploadImage } from "../../utils/Cloudinary";
 
 interface AuthenticatedRequest extends Request {
   user?: { id: string; role: string };
+  file?: Express.Multer.File;
 }
 
 const NewEmployee = async (req: AuthenticatedRequest, res: Response) => {
@@ -19,7 +20,6 @@ const NewEmployee = async (req: AuthenticatedRequest, res: Response) => {
     dateOfJoining,
     dateOfBirth,
     salary,
-    profilePicture,
   } = req.body;
   const role = req.user?.role;
 
@@ -40,9 +40,15 @@ const NewEmployee = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(409).json({ error: "Employee already exists." });
     }
 
-    if (profilePicture) {
-      const fileName = `${Date.now()}-${profilePicture.originalname}`;
-      profilePicture.url = await uploadImage(profilePicture, fileName);
+    let profilePicture = null;
+    
+    if (req.file) {
+      const fileName = `${Date.now()}-${req.file.originalname}`;
+      const { url } = await uploadImage(
+        req.file.buffer,
+        fileName
+      );
+      profilePicture = url;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -56,10 +62,10 @@ const NewEmployee = async (req: AuthenticatedRequest, res: Response) => {
         department,
         phone,
         address,
-        dateOfJoining,
-        dateOfBirth,
-        salary,
-        profilePicture: profilePicture?.url || null,
+        dateOfJoining: new Date(dateOfJoining),
+        dateOfBirth: new Date(dateOfBirth),
+        salary: parseFloat(salary),
+        profilePicture: profilePicture,
       },
     });
 

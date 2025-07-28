@@ -18,9 +18,30 @@ import GetCookie from "@/utils/GetCookie";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-interface AddPayrollFormProps {
+interface PayrollRecord {
+    id: string;
+    employeeId: string;
+    employeeEmail: string;
+    month: string;
+    year: number;
+    basicPay: number;
+    bonus: number;
+    deductions: number;
+    netPay: number;
+    createdAt: string;
+    updatedAt: string;
+    employee?: {
+        id: string;
+        name: string;
+        email: string;
+        profilePicture?: string;
+    };
+}
+
+interface EditPayrollFormProps {
     isOpen: boolean;
     onClose: () => void;
+    payroll: PayrollRecord;
     employees: Array<{
         id: string;
         name: string;
@@ -30,6 +51,7 @@ interface AddPayrollFormProps {
 }
 
 interface PayrollFormData {
+    payrollId: string;
     employeeId: string;
     employeeEmail: string;
     month: string;
@@ -40,8 +62,9 @@ interface PayrollFormData {
     netPay: string;
 }
 
-const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employees }) => {
+const EditPayrollForm: React.FC<EditPayrollFormProps> = ({ isOpen, onClose, payroll, employees }) => {
     const [formData, setFormData] = useState<PayrollFormData>({
+        payrollId: "",
         employeeId: "",
         employeeEmail: "",
         month: "",
@@ -58,7 +81,26 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
 
     const queryClient = useQueryClient();
 
-    // Close dropdown when clicking outside
+    useEffect(() => {
+        if (payroll) {
+            setFormData({
+                payrollId: payroll.id,
+                employeeId: payroll.employeeId,
+                employeeEmail: payroll.employeeEmail,
+                month: payroll.month,
+                year: payroll.year.toString(),
+                basicPay: payroll.basicPay.toString(),
+                bonus: payroll.bonus.toString(),
+                deductions: payroll.deductions.toString(),
+                netPay: payroll.netPay.toString(),
+            });
+            const employee = employees.find(emp => emp.id === payroll.employeeId);
+            if (employee) {
+                setSearchTerm(employee.name);
+            }
+        }
+    }, [payroll, employees]);
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as HTMLElement;
@@ -82,14 +124,14 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
         };
     }, [isEmployeeDropdownOpen, isMonthDropdownOpen, isYearDropdownOpen]);
 
-    const addPayrollMutation = useMutation({
+    const updatePayrollMutation = useMutation({
         mutationFn: async (data: PayrollFormData) => {
             if (!API_URL) {
                 throw new Error("NEXT_PUBLIC_API_URL is not defined.");
             }
 
-            const response = await fetch(`${API_URL}/payroll/new`, {
-                method: "POST",
+            const response = await fetch(`${API_URL}/payroll/update`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${GetCookie()}`,
@@ -106,19 +148,19 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to add payroll");
+                throw new Error(errorData.message || "Failed to update payroll");
             }
 
             return response.json();
         },
         onSuccess: () => {
-            toast.success("Payroll added successfully!");
+            toast.success("Payroll updated successfully!");
             queryClient.invalidateQueries({ queryKey: ["payrolls"] });
             handleClose();
         },
         onError: (error) => {
-            console.error("Add payroll error:", error.message);
-            toast.error(`Failed to add payroll: ${error.message}`);
+            console.error("Update payroll error:", error.message);
+            toast.error(`Failed to update payroll: ${error.message}`);
         },
     });
 
@@ -133,7 +175,7 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
                 ...prev,
                 employeeId,
                 employeeEmail: employee.email,
-                basicPay: employee.salary?.toString() || "",
+                basicPay: employee.salary?.toString() || prev.basicPay,
             }));
             setIsEmployeeDropdownOpen(false);
         }
@@ -153,6 +195,7 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
 
     const handleClose = () => {
         setFormData({
+            payrollId: "",
             employeeId: "",
             employeeEmail: "",
             month: "",
@@ -171,10 +214,9 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        addPayrollMutation.mutate(formData);
+        updatePayrollMutation.mutate(formData);
     };
 
-    // Filter employees based on search term
     const filteredEmployees = employees.filter(employee =>
         employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         employee.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -194,7 +236,7 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-gradient-to-b from-neutral-900 to-neutral-800 rounded-md p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-neutral-700/50">
                 <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-neutral-100">Add New Payroll</h2>
+                    <h2 className="text-2xl font-bold text-neutral-100">Edit Payroll</h2>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -203,7 +245,7 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
                             <User size={18} />
                             Employee
                         </label>
-                        
+
                         <div className="mb-3">
                             <div className="relative">
                                 <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" />
@@ -218,13 +260,12 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
                             </div>
                         </div>
 
-                        {/* Selected Employee Display */}
                         {formData.employeeId && (
                             <div className="mb-3 p-3 bg-blue-500/20 border border-blue-500/30 rounded-md">
                                 <div className="flex items-center justify-between">
                                     <span className="text-blue-300 text-sm">
-                                        Selected: {employees.find(emp => emp.id === formData.employeeId)?.name} 
-                                        ({employees.find(emp => emp.id === formData.employeeId)?.email})
+                                        Selected: {employees.find(emp => emp.id === formData.employeeId)?.name || payroll.employee?.name}
+                                        ({employees.find(emp => emp.id === formData.employeeId)?.email || formData.employeeEmail})
                                     </span>
                                     <button
                                         type="button"
@@ -245,7 +286,6 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
                             </div>
                         )}
 
-                        {/* Employee Dropdown */}
                         {isEmployeeDropdownOpen && (
                             <div className="relative">
                                 <div className="absolute top-0 left-0 right-0 bg-neutral-800/90 border border-neutral-600/50 rounded-md z-10 backdrop-blur-sm max-h-40 overflow-y-auto">
@@ -414,10 +454,10 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
                     <div className="flex flex-col md:flex-row gap-4 pt-4">
                         <Button
                             type="submit"
-                            disabled={addPayrollMutation.isPending}
+                            disabled={updatePayrollMutation.isPending}
                             className="w-full"
                         >
-                            {addPayrollMutation.isPending ? "Adding Payroll..." : "Add Payroll"}
+                            {updatePayrollMutation.isPending ? "Updating Payroll..." : "Update Payroll"}
                         </Button>
                         <RedButton
                             type="button"
@@ -433,4 +473,4 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({ isOpen, onClose, employ
     );
 };
 
-export default AddPayrollForm;
+export default EditPayrollForm;

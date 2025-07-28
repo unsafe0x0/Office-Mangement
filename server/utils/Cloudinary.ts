@@ -12,13 +12,11 @@ interface UploadResult {
 }
 
 export const uploadImage = async (
-  arrayBuffer: ArrayBuffer,
+  buffer: Buffer,
   imageName: string,
   folder: string = "office-management"
 ): Promise<UploadResult> => {
   try {
-    const buffer = Buffer.from(arrayBuffer);
-
     return new Promise<UploadResult>((resolve, reject) => {
       const uploadStream = cloudinary.v2.uploader.upload_stream(
         {

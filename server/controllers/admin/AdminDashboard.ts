@@ -39,7 +39,7 @@ const AdminDashboard = async (req: AuthenticatedRequest, res: Response) => {
       },
     });
 
-    const tasks = await DbClient.task.findMany({
+    const tasksRaw = await DbClient.task.findMany({
       select: {
         id: true,
         title: true,
@@ -51,6 +51,20 @@ const AdminDashboard = async (req: AuthenticatedRequest, res: Response) => {
         updatedAt: true,
       },
     });
+
+    const allEmployeesMinimal = await DbClient.employee.findMany({
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+
+    const employeeEmailMap = new Map(allEmployeesMinimal.map(emp => [emp.id, emp.email]));
+
+    const tasks = tasksRaw.map(task => ({
+      ...task,
+      employeeEmails: task.employeeIds.map(empId => employeeEmailMap.get(empId) || null),
+    }));
 
     const employees = await DbClient.employee.findMany({
       select: {
@@ -69,6 +83,13 @@ const AdminDashboard = async (req: AuthenticatedRequest, res: Response) => {
         isActive: true,
         createdAt: true,
         updatedAt: true,
+        attendance: {
+          select: {
+            id: true,
+            status: true,
+            date: true,
+          },
+        },
       },
     });
 
@@ -97,17 +118,14 @@ const AdminDashboard = async (req: AuthenticatedRequest, res: Response) => {
         netPay: true,
         createdAt: true,
         updatedAt: true,
-      },
-    });
-
-    const attendance = await DbClient.attendance.findMany({
-      select: {
-        id: true,
-        employeeId: true,
-        date: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
+        employee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            profilePicture: true,
+          },
+        },
       },
     });
 
@@ -119,7 +137,6 @@ const AdminDashboard = async (req: AuthenticatedRequest, res: Response) => {
         employees,
         leaves,
         payrolls,
-        attendance,
       },
     });
   } catch (error) {

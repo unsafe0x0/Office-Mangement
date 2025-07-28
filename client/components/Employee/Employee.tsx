@@ -44,7 +44,7 @@ const Employee = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Employee Dashboard</h1>
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-md shadow p-6">
         <p><strong>Name:</strong> {data?.name}</p>
         <p><strong>Email:</strong> {data?.email}</p>
         {/* Add more employee info and dashboard features here */}

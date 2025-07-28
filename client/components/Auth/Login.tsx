@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { Mail, Lock, User, Shield, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, Shield, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import SetCookie from "@/utils/SetCookie";
 import { useRouter } from "next/navigation";
+import Button from "../ui/Button";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -60,29 +61,37 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="lg:container w-full max-w-md">
-        <div className="bg-neutral-900 rounded p-8 max-w-xl mx-auto">
-          <h1 className="text-3xl font-bold text-neutral-100 text-center mb-8 font-heading">
-            Office Management Login
-          </h1>
+      <div className="w-full max-w-md">
+        <div className="bg-neutral-900 rounded-md border border-neutral-700/50 p-8 max-w-xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <Shield size={28} className="text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-neutral-100 font-heading">
+              Office Management
+            </h1>
+            <p className="text-neutral-400 mt-2">Sign in to your account</p>
+          </div>
 
-          <div className="flex mb-6 bg-neutral-800/70 rounded p-1">
+          <div className="flex mb-6 bg-neutral-800/70 rounded-md p-1 border border-neutral-600/50">
             <button
               onClick={() => setLoginType("employee")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded transition-colors ${loginType === "employee"
-                  ? "bg-blue-500 text-white"
-                  : "text-neutral-300 hover:text-neutral-100"
-                }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md transition-all duration-200 font-normal ${
+                loginType === "employee"
+                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+                  : "text-neutral-300 hover:text-neutral-100 hover:bg-neutral-700/50"
+              }`}
             >
               <User size={18} />
               Employee
             </button>
             <button
               onClick={() => setLoginType("admin")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded transition-colors ${loginType === "admin"
-                  ? "bg-blue-500 text-white"
-                  : "text-neutral-300 hover:text-neutral-100"
-                }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md transition-all duration-200 font-normal ${
+                loginType === "admin"
+                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+                  : "text-neutral-300 hover:text-neutral-100 hover:bg-neutral-700/50"
+              }`}
             >
               <Shield size={18} />
               Admin
@@ -93,21 +102,18 @@ const Login: React.FC = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-md font-medium text-neutral-300 mb-2"
+                className="flex items-center gap-2 text-sm font-normal text-neutral-300 mb-2"
               >
+                <Mail size={16} />
                 Email Address
               </label>
               <div className="relative">
-                <Mail
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500"
-                  size={18}
-                />
                 <input
                   type="email"
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-5 py-2 bg-neutral-800/70 border border-neutral-700 rounded text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 bg-neutral-800/70 border border-neutral-600/50 rounded-md text-neutral-100 placeholder-neutral-400 focus:outline-none focus:border-blue-500/50 focus:bg-neutral-800/90 transition-all duration-200"
                   placeholder="Enter your email"
                   required
                 />
@@ -117,50 +123,45 @@ const Login: React.FC = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-md font-medium text-neutral-300 mb-2"
+                className="flex items-center gap-2 text-sm font-normal text-neutral-300 mb-2"
               >
+                <Lock size={16} />
                 Password
               </label>
               <div className="relative">
-                <Lock
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500"
-                  size={18}
-                />
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-5 py-2 bg-neutral-800/70 border border-neutral-700 rounded text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 bg-neutral-800/70 border border-neutral-600/50 rounded-md text-neutral-100 placeholder-neutral-400 focus:outline-none focus:border-blue-500/50 focus:bg-neutral-800/90 transition-all duration-200 pr-10"
                   placeholder="Enter your password"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-300 hover:text-neutral-200 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors duration-200 p-1 rounded-md hover:bg-neutral-700/50"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-normal py-2 px-4 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-neutral-900 cursor-pointer"
+              className="disabled:opacity-50 disabled:cursor-not-allowed w-full justify-center"
+              icon={loginMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : null}
               disabled={loginMutation.isPending}
             >
-              {loginMutation.isPending
-                ? "Signing in..."
-                : `Sign in as ${loginType === "employee" ? "Employee" : "Admin"
-                }`}
-            </button>
+              {`Sign in as ${loginType === "employee" ? "Employee" : "Admin"}`}
+            </Button>
           </form>
 
           <div className="mt-6 text-center">
             <a
               href="#"
-              className="text-sm text-blue-400 hover:text-blue-300 transition-colors underline"
+              className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200 underline hover:no-underline"
             >
               Forgot your password?
             </a>

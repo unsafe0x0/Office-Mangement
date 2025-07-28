@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     FileText,
     Calendar,
@@ -19,9 +19,21 @@ import GetCookie from "@/utils/GetCookie";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-interface AddTaskFormProps {
+interface Task {
+    id: string;
+    title: string;
+    description?: string;
+    status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+    dueDate?: string;
+    employeeIds: string[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface EditTaskFormProps {
     isOpen: boolean;
     onClose: () => void;
+    task: Task;
     employees: Array<{
         id: string;
         name: string;
@@ -30,6 +42,7 @@ interface AddTaskFormProps {
 }
 
 interface TaskFormData {
+    taskId: string;
     title: string;
     description: string;
     dueDate: string;
@@ -37,8 +50,9 @@ interface TaskFormData {
     employeeIds: string[];
 }
 
-const AddTaskForm: React.FC<AddTaskFormProps> = ({ isOpen, onClose, employees }) => {
+const EditTaskForm: React.FC<EditTaskFormProps> = ({ isOpen, onClose, task, employees }) => {
     const [formData, setFormData] = useState<TaskFormData>({
+        taskId: task.id,
         title: "",
         description: "",
         dueDate: "",
@@ -50,14 +64,27 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ isOpen, onClose, employees })
 
     const queryClient = useQueryClient();
 
-    const addTaskMutation = useMutation({
+    useEffect(() => {
+        if (task) {
+            setFormData({
+                taskId: task.id,
+                title: task.title,
+                description: task.description || "",
+                dueDate: task.dueDate ? task.dueDate.slice(0, 16) : "",
+                status: task.status,
+                employeeIds: task.employeeIds,
+            });
+        }
+    }, [task]);
+
+    const updateTaskMutation = useMutation({
         mutationFn: async (data: TaskFormData) => {
             if (!API_URL) {
                 throw new Error("NEXT_PUBLIC_API_URL is not defined.");
             }
 
-            const response = await fetch(`${API_URL}/task/new`, {
-                method: "POST",
+            const response = await fetch(`${API_URL}/task/update`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${GetCookie()}`,
@@ -67,19 +94,19 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ isOpen, onClose, employees })
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to add task");
+                throw new Error(errorData.message || "Failed to update task");
             }
 
             return response.json();
         },
         onSuccess: () => {
-            toast.success("Task added successfully!");
+            toast.success("Task updated successfully!");
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
             handleClose();
         },
         onError: (error) => {
-            console.error("Add task error:", error.message);
-            toast.error(`Failed to add task: ${error.message}`);
+            console.error("Update task error:", error.message);
+            toast.error(`Failed to update task: ${error.message}`);
         },
     });
 
@@ -98,6 +125,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ isOpen, onClose, employees })
 
     const handleClose = () => {
         setFormData({
+            taskId: "",
             title: "",
             description: "",
             dueDate: "",
@@ -111,9 +139,10 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ isOpen, onClose, employees })
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        addTaskMutation.mutate(formData);
+        updateTaskMutation.mutate(formData);
     };
 
+    // Filter employees based on search term
     const filteredEmployees = employees.filter(employee =>
         employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         employee.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -134,7 +163,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ isOpen, onClose, employees })
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-gradient-to-b from-neutral-900 to-neutral-800 rounded-md p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-neutral-700/50">
                 <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-neutral-100">Add New Task</h2>
+                    <h2 className="text-2xl font-bold text-neutral-100">Edit Task</h2>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -288,10 +317,10 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ isOpen, onClose, employees })
                     <div className="flex flex-col md:flex-row gap-4 pt-4">
                         <Button
                             type="submit"
-                            disabled={addTaskMutation.isPending}
                             className="w-full"
+                            disabled={updateTaskMutation.isPending}
                         >
-                            {addTaskMutation.isPending ? "Adding Task..." : "Add Task"}
+                            {updateTaskMutation.isPending ? "Updating Task..." : "Update Task"}
                         </Button>
                         <RedButton
                             type="button"
@@ -307,4 +336,4 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ isOpen, onClose, employees })
     );
 };
 
-export default AddTaskForm;
+export default EditTaskForm; 

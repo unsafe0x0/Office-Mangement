@@ -109,7 +109,7 @@ model Task {
   title       String
   description String?
   status      TaskStatus @default(PENDING)
-  dueDate     DateTime?
+  dueDate     DateTime
   employeeIds String[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt

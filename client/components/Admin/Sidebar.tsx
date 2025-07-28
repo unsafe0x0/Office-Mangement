@@ -17,13 +17,13 @@ import RemoveCookie from "@/utils/RemoveCookie";
 import { toast } from "react-toastify";
 
 const navItems = [
-  { name: "Dashboard", icon: LayoutDashboard },
-  { name: "Employees", icon: Users },
-  { name: "Tasks", icon: NotepadText },
-  { name: "Notifications", icon: Bell },
-  { name: "Leaves", icon: CalendarCheck },
-  { name: "Payroll", icon: ScrollText },
-  { name: "Settings", icon: Settings },
+  { name: "Dashboard", icon: LayoutDashboard, color: "text-blue-400" },
+  { name: "Employees", icon: Users, color: "text-green-400" },
+  { name: "Tasks", icon: NotepadText, color: "text-purple-400" },
+  { name: "Notifications", icon: Bell, color: "text-orange-400" },
+  { name: "Leaves", icon: CalendarCheck, color: "text-emerald-400" },
+  { name: "Payroll", icon: ScrollText, color: "text-cyan-400" },
+  { name: "Settings", icon: Settings, color: "text-gray-400" },
 ];
 
 interface User {
@@ -45,12 +45,12 @@ const handleLogout = () => {
   RemoveCookie();
   toast.success("Logged out successfully");
   window.location.href = "/login";
-}
+};
 
 const Sidebar = ({ activeTab, setActiveTab, user, open, setOpen }: SidebarProps) => {
   const SidebarLinks = () => (
-    <nav className="space-y-2">
-      {navItems.map(({ name, icon: Icon }) => {
+    <nav className="space-y-1">
+      {navItems.map(({ name, icon: Icon, color }) => {
         const isActive = activeTab === name;
 
         return (
@@ -61,16 +61,14 @@ const Sidebar = ({ activeTab, setActiveTab, user, open, setOpen }: SidebarProps)
               setOpen(false);
             }}
             className={`
-              flex w-full items-center md:justify-center lg:justify-start
-              gap-2 md:gap-0 lg:gap-2 p-2 rounded-md cursor-pointer transition-colors
+              group flex items-center gap-3 w-full p-2 rounded-md cursor-pointer transition-colors
               ${isActive
-                ? "bg-blue-500 text-white hover:bg-blue-600"
-                : "hover:bg-neutral-800/70"
-              }
+                ? "bg-blue-600 text-white"
+                : "hover:bg-neutral-700/50 text-neutral-300 hover:text-white"}
             `}
           >
-            <Icon className="w-5 h-5 md:h-6 md:w-6 lg:w-5 lg:h-5 shrink-0" />
-            <span className="inline md:hidden lg:inline">{name}</span>
+            <Icon className={`w-5 h-5 ${isActive ? "text-white" : color}`} />
+            <span className="font-normal">{name}</span>
           </button>
         );
       })}
@@ -78,57 +76,64 @@ const Sidebar = ({ activeTab, setActiveTab, user, open, setOpen }: SidebarProps)
   );
 
   const Logout = () => (
-    <button onClick={handleLogout} className="flex items-center md:justify-center lg:justify-start gap-2 md:gap-0 lg:gap-2 p-2 mt-auto rounded-md bg-red-500 hover:bg-red-600 transition-colors w-full text-white cursor-pointer">
-      <LogOutIcon className="w-5 h-5 shrink-0" />
-      <span className="inline md:hidden lg:inline">Logout</span>
+    <button
+      onClick={handleLogout}
+      className="flex items-center gap-3 p-2 mt-auto rounded-md bg-red-600 hover:bg-red-700 transition-colors w-full text-white"
+    >
+      <LogOutIcon className="w-5 h-5" />
+      <span className="font-normal">Logout</span>
     </button>
   );
 
   const UserCard = () => (
-    <div className="flex items-center justify-center lg:justify-start p-4 rounded-md bg-neutral-800/70">
+    <div className="flex items-center p-4 rounded-md bg-neutral-800 border border-neutral-700">
       <Image
         src={user.profilePicture || "/placeholder.jpg"}
         alt={user.name}
-        width={40}
-        height={40}
+        width={44}
+        height={44}
         className="rounded-md object-cover"
       />
-      <div className="flex md:hidden lg:flex flex-col ml-3">
-        <span className="font-normal whitespace-nowrap">{user.name}</span>
-        <span className="text-sm text-neutral-500">{user.email}</span>
+      <div className="ml-3 flex flex-col">
+        <span className="font-semibold text-neutral-200">{user.name}</span>
+        <span className="text-sm text-neutral-400">{user.email}</span>
       </div>
     </div>
   );
 
   return (
     <>
-      <header className="flex md:hidden items-center justify-between px-4 py-3 backdrop-blur-sm border-b border-neutral-700 sticky top-0 z-30 bg-transparent">
-        <h1 className="font-semibold text-2xl tracking-wide">Office Management</h1>
-        <span className="w-6" />
+      <header className="flex lg:hidden items-center justify-between px-4 py-3 border-b border-neutral-700 bg-neutral-900">
+        <h1 className="font-semibold text-2xl font-heading text-neutral-100">
+          Office Management
+        </h1>
         {!open ? (
-          <button onClick={() => setOpen(true)}>
-            <MenuIcon size={24} />
+          <button
+            onClick={() => setOpen(true)}
+            className="p-2 rounded-md hover:bg-neutral-800"
+          >
+            <MenuIcon size={24} className="text-neutral-300" />
           </button>
         ) : (
           <button
             onClick={() => setOpen(false)}
-            className="absolute right-4 z-50"
+            className="p-2 rounded-md hover:bg-neutral-800"
           >
-            <X size={24} />
+            <X size={24} className="text-neutral-300" />
           </button>
         )}
       </header>
 
       <div
-        className={`fixed inset-0 z-40 md:hidden transition-transform ${open ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-0 z-40 lg:hidden transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"
           }`}
       >
         <div
-          className="absolute inset-0 bg-neutral-800/70"
+          className="absolute inset-0 bg-neutral-900/0"
           onClick={() => setOpen(false)}
         />
         <div
-          className="relative h-full w-68 flex flex-col bg-neutral-800 p-4"
+          className="relative h-full w-72 flex flex-col bg-neutral-900 p-4 border-r border-neutral-700"
           onClick={(e) => e.stopPropagation()}
         >
           <UserCard />
@@ -138,14 +143,13 @@ const Sidebar = ({ activeTab, setActiveTab, user, open, setOpen }: SidebarProps)
           <Logout />
         </div>
       </div>
-
       <div
         className="
           hidden
-          md:flex md:flex-col md:w-20 md:shrink-0
-          lg:w-70
-          md:h-screen md:sticky md:top-0 p-4
+          lg:flex lg:flex-col lg:w-72
+          h-screen sticky top-0 p-4
           border-r border-neutral-700
+          bg-neutral-900
         "
       >
         <UserCard />

@@ -12,16 +12,16 @@ const UpdateTask = async (req: AuthenticatedRequest, res: Response) => {
     return res.status(400).json({ error: "Unauthorized access." });
   }
 
-  const { id, title, description, status, dueDate, employeeIds } = req.body;
+  const { taskId, title, description, status, dueDate, employeeIds } = req.body;
 
   try {
     const updatedTask = await DbClient.task.update({
-      where: { id },
+      where: { id: taskId },
       data: {
         title,
         description,
         status,
-        dueDate,
+        dueDate: new Date(dueDate),
         employeeIds,
       },
     });

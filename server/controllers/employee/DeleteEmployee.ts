@@ -12,11 +12,11 @@ const DeleteEmployee = async (req: AuthenticatedRequest, res: Response) => {
     return res.status(400).json({ error: "Unauthorized access." });
   }
 
-  const { id } = req.params;
+  const { employeeId } = req.body;
 
   try {
     const employee = await DbClient.employee.findUnique({
-      where: { id },
+      where: { id: employeeId },
     });
 
     if (!employee) {
@@ -24,7 +24,7 @@ const DeleteEmployee = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     await DbClient.employee.delete({
-      where: { id },
+      where: { id: employeeId },
     });
 
     return res.status(200).json({ message: "Employee deleted successfully." });
