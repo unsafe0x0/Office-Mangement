@@ -16,9 +16,14 @@ employeeRoutes.post(
   "/register",
   AuthMiddleware,
   upload.single("profilePicture"),
-  NewEmployee
+  NewEmployee,
 );
-employeeRoutes.put("/update", AuthMiddleware, upload.single("profilePicture"), UpdateEmployee);
+employeeRoutes.put(
+  "/update",
+  AuthMiddleware,
+  upload.single("profilePicture"),
+  UpdateEmployee,
+);
 employeeRoutes.delete("/delete", AuthMiddleware, DeleteEmployee);
 employeeRoutes.get("/info", AuthMiddleware, EmployeeInfo);
 employeeRoutes.get("/all", AuthMiddleware, AllEmployee);

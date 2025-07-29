@@ -100,13 +100,27 @@ const Admin = () => {
         setOpen={setSidebarOpen}
       />
       <section className="flex-1 p-4 overflow-y-scroll w-full">
-        {activeTab === "Dashboard" && <Dashboard totalEmployees={totalEmployees} totalLeaves={totalLeaves} totalTasks={totalTasks} totalNotifications={totalNotifications}
-          employees={employees} leaves={leaves} notifications={notifications} setActiveTab={setActiveTab} />}
+        {activeTab === "Dashboard" && (
+          <Dashboard
+            totalEmployees={totalEmployees}
+            totalLeaves={totalLeaves}
+            totalTasks={totalTasks}
+            totalNotifications={totalNotifications}
+            employees={employees}
+            leaves={leaves}
+            notifications={notifications}
+            setActiveTab={setActiveTab}
+          />
+        )}
         {activeTab === "Employees" && <Employees employees={employees} />}
         {activeTab === "Leaves" && <Leaves leaves={leaves} />}
-        {activeTab === "Notifications" && <Notifications notifications={notifications} />}
+        {activeTab === "Notifications" && (
+          <Notifications notifications={notifications} />
+        )}
         {activeTab === "Tasks" && <Tasks employees={employees} tasks={tasks} />}
-        {activeTab === "Payroll" && <Payroll employees={employees} payrolls={payrolls} />}
+        {activeTab === "Payroll" && (
+          <Payroll employees={employees} payrolls={payrolls} />
+        )}
         {activeTab === "Settings" && <Settings admin={user} />}
       </section>
     </main>

@@ -41,13 +41,10 @@ const NewEmployee = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     let profilePicture = null;
-    
+
     if (req.file) {
       const fileName = `${Date.now()}-${req.file.originalname}`;
-      const { url } = await uploadImage(
-        req.file.buffer,
-        fileName
-      );
+      const { url } = await uploadImage(req.file.buffer, fileName);
       profilePicture = url;
     }
 

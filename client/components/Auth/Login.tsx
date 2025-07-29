@@ -151,7 +151,11 @@ const Login: React.FC = () => {
             <Button
               type="submit"
               className="disabled:opacity-50 disabled:cursor-not-allowed w-full justify-center"
-              icon={loginMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : null}
+              icon={
+                loginMutation.isPending ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : null
+              }
               disabled={loginMutation.isPending}
             >
               {`Sign in as ${loginType === "employee" ? "Employee" : "Admin"}`}

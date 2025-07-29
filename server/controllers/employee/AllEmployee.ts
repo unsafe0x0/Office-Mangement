@@ -49,7 +49,7 @@ const AllEmployee = async (req: AuthenticatedRequest, res: Response) => {
 
     const data = employees.map((employee) => {
       const tasks = allTasks.filter((task) =>
-        task.employeeIds.includes(employee.id)
+        task.employeeIds.includes(employee.id),
       );
       return {
         ...employee,

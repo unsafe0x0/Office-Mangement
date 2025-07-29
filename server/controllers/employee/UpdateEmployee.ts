@@ -9,14 +9,24 @@ interface AuthenticatedRequest extends Request {
 }
 
 const UpdateEmployee = async (req: AuthenticatedRequest, res: Response) => {
-  const { name, email, password, position, department, phone, address, dateOfJoining, dateOfBirth, salary, employeeId, profilePicture } = req.body;
+  const {
+    name,
+    email,
+    password,
+    position,
+    department,
+    phone,
+    address,
+    dateOfJoining,
+    dateOfBirth,
+    salary,
+    employeeId,
+  } = req.body;
   const role = req.user?.role;
 
-  if(role != "ADMIN"  && role != "EMPLOYEE") {
+  if (role != "ADMIN" && role != "EMPLOYEE") {
     return res.status(400).json({ error: "You are not authorized to update." });
   }
-
-  console.log(req.body);
 
   try {
     const existingEmployee = await DbClient.employee.findUnique({
@@ -33,9 +43,9 @@ const UpdateEmployee = async (req: AuthenticatedRequest, res: Response) => {
     if (email) updateData.email = email;
     if (position) updateData.position = position;
     if (department) updateData.department = department;
-    if (profilePicture) {
-      const fileName = `${Date.now()}-${profilePicture.originalname}`;
-      const { url } = await uploadImage(profilePicture, fileName);
+    if (req.file) {
+      const fileName = `${Date.now()}-${req.file.originalname}`;
+      const { url } = await uploadImage(req.file.buffer, fileName);
       updateData.profilePicture = url;
     }
     if (phone) updateData.phone = phone;

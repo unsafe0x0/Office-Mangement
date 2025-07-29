@@ -50,7 +50,6 @@ This API provides endpoints for managing office operations, including employee m
 - **PUT** `/task/update`: Update an existing task (requires authentication).
 - **DELETE** `/task/delete`: Delete a task (requires authentication).
 
-
 ## Installation
 
 ```bash

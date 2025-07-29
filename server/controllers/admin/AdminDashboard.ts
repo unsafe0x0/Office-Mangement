@@ -59,11 +59,15 @@ const AdminDashboard = async (req: AuthenticatedRequest, res: Response) => {
       },
     });
 
-    const employeeEmailMap = new Map(allEmployeesMinimal.map(emp => [emp.id, emp.email]));
+    const employeeEmailMap = new Map(
+      allEmployeesMinimal.map((emp) => [emp.id, emp.email]),
+    );
 
-    const tasks = tasksRaw.map(task => ({
+    const tasks = tasksRaw.map((task) => ({
       ...task,
-      employeeEmails: task.employeeIds.map(empId => employeeEmailMap.get(empId) || null),
+      employeeEmails: task.employeeIds.map(
+        (empId) => employeeEmailMap.get(empId) || null,
+      ),
     }));
 
     const employees = await DbClient.employee.findMany({

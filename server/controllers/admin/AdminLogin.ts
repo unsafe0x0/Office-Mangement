@@ -29,7 +29,7 @@ const AdminLogin = async (req: Request, res: Response) => {
       process.env.JWT_SECRET!,
       {
         expiresIn: "7d",
-      }
+      },
     );
 
     return res.status(200).json({

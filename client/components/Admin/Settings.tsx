@@ -32,7 +32,9 @@ const Settings: React.FC<SettingsProps> = ({ admin }) => {
     profilePicture: null,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | null>(admin?.profilePicture || null);
+  const [previewImage, setPreviewImage] = useState<string | null>(
+    admin?.profilePicture || null,
+  );
 
   const queryClient = useQueryClient();
 
@@ -44,7 +46,8 @@ const Settings: React.FC<SettingsProps> = ({ admin }) => {
       formDataToSend.append("name", data.name);
       formDataToSend.append("email", data.email);
       if (data.password) formDataToSend.append("password", data.password);
-      if (data.profilePicture) formDataToSend.append("profilePicture", data.profilePicture);
+      if (data.profilePicture)
+        formDataToSend.append("profilePicture", data.profilePicture);
       const response = await fetch(`${API_URL}/admin/update`, {
         method: "PUT",
         headers: {
@@ -67,7 +70,10 @@ const Settings: React.FC<SettingsProps> = ({ admin }) => {
     },
   });
 
-  const handleInputChange = (field: keyof AdminFormData, value: string | File | null) => {
+  const handleInputChange = (
+    field: keyof AdminFormData,
+    value: string | File | null,
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -90,8 +96,12 @@ const Settings: React.FC<SettingsProps> = ({ admin }) => {
 
   return (
     <div className="w-full max-w-2xl">
-      <h2 className="text-3xl font-semibold text-neutral-100 font-heading mb-2">Update Profile</h2>
-      <p className="text-neutral-400 mb-6">Manage your admin profile information.</p>
+      <h2 className="text-3xl font-semibold text-neutral-100 font-heading mb-2">
+        Update Profile
+      </h2>
+      <p className="text-neutral-400 mb-6">
+        Manage your admin profile information.
+      </p>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="flex items-center gap-2 text-base font-normal text-neutral-300 mb-2">

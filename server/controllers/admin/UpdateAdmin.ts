@@ -5,10 +5,11 @@ import { uploadImage } from "../../utils/Cloudinary";
 
 interface AuthenticatedRequest extends Request {
   user?: { id: string };
+  file?: Express.Multer.File;
 }
 
 const UpdateAdmin = async (req: AuthenticatedRequest, res: Response) => {
-  const { name, email, password, profilePicture } = req.body;
+  const { name, email, password } = req.body;
   const id = req.user?.id;
 
   if (!id) {
@@ -28,10 +29,10 @@ const UpdateAdmin = async (req: AuthenticatedRequest, res: Response) => {
 
     if (name) updateData.name = name;
     if (email) updateData.email = email;
-    if (profilePicture) {
-      const fileName = `${Date.now()}-${profilePicture.originalname}`;
-      const uploadedImage = await uploadImage(profilePicture, fileName);
-      updateData.profilePicture = uploadedImage.url;
+    if (req.file) {
+      const fileName = `${Date.now()}-${req.file.originalname}`;
+      const { url } = await uploadImage(req.file.buffer, fileName);
+      updateData.profilePicture = url;
     }
 
     if (password) {

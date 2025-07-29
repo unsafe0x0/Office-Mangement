@@ -14,7 +14,7 @@ interface UploadResult {
 export const uploadImage = async (
   buffer: Buffer,
   imageName: string,
-  folder: string = "office-management"
+  folder: string = "office-management",
 ): Promise<UploadResult> => {
   try {
     return new Promise<UploadResult>((resolve, reject) => {
@@ -37,7 +37,7 @@ export const uploadImage = async (
             url: result!.secure_url,
             publicId: result!.public_id,
           });
-        }
+        },
       );
 
       uploadStream.end(buffer);
