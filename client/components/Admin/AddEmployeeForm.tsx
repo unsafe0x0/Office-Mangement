@@ -188,7 +188,7 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({
                 </label>
               </div>
               {previewImage && (
-                <div className="w-16 h-16 rounded-full overflow-hidden border border-neutral-700">
+                <div className="w-16 h-16 rounded-md overflow-hidden border border-neutral-700">
                   <img
                     src={previewImage}
                     alt="Preview"

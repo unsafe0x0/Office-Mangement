@@ -107,7 +107,7 @@ const NotificationCard = ({
     <div className="relative bg-neutral-800/50 border border-neutral-700 rounded-md p-6 hover:bg-neutral-800/70 transition-colors">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-md bg-blue-500/20 flex items-center justify-center">
             <Bell size={18} className="text-blue-400" />
           </div>
           <div>

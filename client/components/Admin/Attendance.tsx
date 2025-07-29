@@ -87,7 +87,6 @@ const Attendance = ({ attendance, employees }: AttendanceProps) => {
     setIsAddAttendanceFormOpen(true);
   };
 
-  // Group attendance by date for better organization
   const groupedAttendance = attendance.reduce(
     (groups, record) => {
       const date = formatDate(record.date);
@@ -159,7 +158,7 @@ const Attendance = ({ attendance, employees }: AttendanceProps) => {
               </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm text-left text-neutral-300">
-                  <thead className="text-sm uppercase text-neutral-400 border-b border-neutral-700">
+                  <thead className="text-sm text-neutral-400 border-b border-neutral-700">
                     <tr>
                       <th className="px-6 py-3">Employee</th>
                       <th className="px-6 py-3">Status</th>
@@ -175,7 +174,7 @@ const Attendance = ({ attendance, employees }: AttendanceProps) => {
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-600">
+                            <div className="w-8 h-8 rounded-md overflow-hidden border border-neutral-600">
                               <img
                                 src={
                                   record.employee?.profilePicture ||
@@ -239,7 +238,7 @@ const Attendance = ({ attendance, employees }: AttendanceProps) => {
         ) : (
           <div className="bg-neutral-900 rounded-md shadow-lg">
             <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neutral-800 flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-md bg-neutral-800 flex items-center justify-center">
                 <Calendar size={24} className="text-neutral-400" />
               </div>
               <h3 className="text-lg font-normal text-neutral-300 mb-2">

@@ -1,8 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GetCookie from "@/utils/GetCookie";
 import { useQuery } from "@tanstack/react-query";
+import Sidebar from "./Sidebar";
+import Dashboard from "./Dashboard";
+import Leaves from "./Leaves";
+import Attendance from "./Attendance";
+import Payroll from "./Payroll";
+import Notifications from "./Notifications";
+import Settings from "./Settings";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -25,6 +32,26 @@ const Employee = () => {
     queryFn: fetchEmployeeData,
   });
 
+  const [activeTab, setActiveTab] = useState("Dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [leaves, setLeaves] = useState([]);
+  const [attendance, setAttendance] = useState([]);
+  const [payrolls, setPayrolls] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+
+  const user = data?.employee;
+
+  useEffect(() => {
+    if (user) {
+      setLeaves(user.leaves || []);
+      setAttendance(user.attendance || []);
+      setPayrolls(user.payrolls || []);
+    }
+    if (data?.notifications) {
+      setNotifications(data.notifications);
+    }
+  }, [data, user]);
+
   if (isLoading) {
     return (
       <div
@@ -33,17 +60,16 @@ const Employee = () => {
       >
         <svg
           aria-hidden="true"
-          className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+          className="inline w-12 h-12 animate-spin text-gray-500 fill-blue-500"
           viewBox="0 0 100 101"
-          fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+            d="M100 50.6C100 78.2 77.6 100.6 50 100.6S0 78.2 0 50.6 22.4 0.6 50 0.6 100 22.98 100 50.6Z"
             fill="currentColor"
           />
           <path
-            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.864 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7992 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+            d="M93.97 39.04C96.39 38.4 97.86 35.91 97 33.55C95.29 28.82 92.87 24.37 89.81 20.35..."
             fill="currentFill"
           />
         </svg>
@@ -52,22 +78,57 @@ const Employee = () => {
     );
   }
 
-  if (error) {
-    return <div className="text-red-500">Error: {error.message}</div>;
+  if (error || !user) {
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        Error: {error?.message || "User data not available"}
+      </div>
+    );
   }
 
+  const sidebarUser = {
+    name: user.name,
+    email: user.email,
+    profilePicture: user.profilePicture || "/placeholder.jpg",
+    role: user.role,
+  };
+
+  const totalLeaves = leaves.length;
+  const totalAttendance = attendance.length;
+  const totalNotifications = notifications.length;
+  const totalPayrolls = payrolls.length;
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Employee Dashboard</h1>
-      <div className="bg-white rounded-md shadow p-6">
-        <p>
-          <strong>Name:</strong> {data?.name}
-        </p>
-        <p>
-          <strong>Email:</strong> {data?.email}
-        </p>
-      </div>
-    </div>
+    <main className="flex flex-col lg:flex-row h-screen fixed w-full">
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        user={sidebarUser}
+        open={sidebarOpen}
+        setOpen={setSidebarOpen}
+      />
+      <section className="flex-1 p-4 overflow-y-scroll w-full">
+        {activeTab === "Dashboard" && (
+          <Dashboard
+            totalLeaves={totalLeaves}
+            totalAttendance={totalAttendance}
+            totalNotifications={totalNotifications}
+            totalPayrolls={totalPayrolls}
+            recentLeaves={leaves.slice(0, 5)}
+            recentAttendance={attendance.slice(0, 5)}
+            recentNotifications={notifications.slice(0, 6)}
+            setActiveTab={setActiveTab}
+          />
+        )}
+        {activeTab === "Leaves" && <Leaves leaves={leaves} />}
+        {activeTab === "Attendance" && <Attendance attendance={attendance} />}
+        {activeTab === "Payroll" && <Payroll payrolls={payrolls} />}
+        {activeTab === "Notifications" && (
+          <Notifications notifications={notifications} />
+        )}
+        {activeTab === "Settings" && <Settings employee={user} />}
+      </section>
+    </main>
   );
 };
 

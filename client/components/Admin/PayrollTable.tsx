@@ -134,7 +134,7 @@ const PayrollTable = ({ title, payrolls, employees }: PayrollTableProps) => {
 
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm text-left text-neutral-300">
-            <thead className="text-sm uppercase text-neutral-400 border-b border-neutral-700/50">
+            <thead className="text-sm text-neutral-400 border-b border-neutral-700/50">
               <tr>
                 <th className="px-6 py-3">Employee</th>
                 <th className="px-6 py-3">Basic Pay</th>
@@ -153,7 +153,7 @@ const PayrollTable = ({ title, payrolls, employees }: PayrollTableProps) => {
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-600">
+                      <div className="w-8 h-8 rounded-md overflow-hidden border border-neutral-600">
                         <img
                           src={
                             payroll.employee?.profilePicture ||

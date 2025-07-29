@@ -9,7 +9,7 @@ const DeleteNotification = async (req: AuthenticatedRequest, res: Response) => {
   const role = req.user?.role;
 
   if (!role || role !== "ADMIN") {
-    return res.status(400).json({ error: "Unauthorized access." });
+    return res.status(401).json({ error: "Unauthorized." });
   }
 
   const { notificationId } = req.body;

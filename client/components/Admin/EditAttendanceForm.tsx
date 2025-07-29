@@ -101,7 +101,6 @@ const EditAttendanceForm: React.FC<EditAttendanceFormProps> = ({
     updateAttendanceMutation.mutate(formData);
   };
 
-  // Update form data when attendance prop changes
   useEffect(() => {
     if (attendance) {
       setFormData({
@@ -142,7 +141,7 @@ const EditAttendanceForm: React.FC<EditAttendanceFormProps> = ({
 
         <div className="bg-neutral-800/50 border border-neutral-700 rounded-md p-4 mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden border border-neutral-600">
+            <div className="w-16 h-16 rounded-md overflow-hidden border border-neutral-600">
               <img
                 src={employee.profilePicture || "/placeholder.jpg"}
                 alt={employee.name}

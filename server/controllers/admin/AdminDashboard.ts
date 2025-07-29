@@ -10,8 +10,7 @@ const AdminDashboard = async (req: AuthenticatedRequest, res: Response) => {
   const role = req.user?.role;
 
   if (!id || role !== "ADMIN") {
-    console.error("Unauthorized access attempt by user:", req.user);
-    return res.status(400).json({ error: "Unauthorized access." });
+    return res.status(401).json({ error: "Unauthorized." });
   }
 
   try {
@@ -107,6 +106,14 @@ const AdminDashboard = async (req: AuthenticatedRequest, res: Response) => {
         status: true,
         createdAt: true,
         updatedAt: true,
+        employee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            profilePicture: true,
+          },
+        },
       },
     });
 

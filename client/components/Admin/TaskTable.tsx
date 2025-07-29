@@ -75,7 +75,7 @@ const TaskTable = ({ tasks, onEdit, onDelete }: TaskTableProps) => {
     <div className="bg-neutral-800/50 border border-neutral-700/50 rounded-md overflow-hidden w-full">
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-left text-neutral-300">
-          <thead className="text-sm uppercase text-neutral-400 border-b border-neutral-700/50">
+          <thead className="text-sm text-neutral-400 border-b border-neutral-700/50">
             <tr>
               <th className="px-6 py-3">Task</th>
               <th className="px-6 py-3">Status</th>
@@ -186,7 +186,7 @@ const TaskTable = ({ tasks, onEdit, onDelete }: TaskTableProps) => {
 
       {tasks.length === 0 && (
         <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neutral-800 flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-md bg-neutral-800 flex items-center justify-center">
             <FileText size={24} className="text-neutral-400" />
           </div>
           <h3 className="text-lg font-normal text-neutral-300 mb-2">

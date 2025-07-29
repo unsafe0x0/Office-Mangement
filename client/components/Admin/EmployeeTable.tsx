@@ -106,7 +106,7 @@ const EmployeeTable = ({ employees }: { employees: Employee[] }) => {
     <div className="bg-neutral-800/50 border border-neutral-700/50 rounded-md overflow-hidden w-full">
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-left text-neutral-300">
-          <thead className="text-sm uppercase text-neutral-400 border-b border-neutral-700/50">
+          <thead className="text-sm text-neutral-400 border-b border-neutral-700/50">
             <tr>
               <th className="px-6 py-3">Employee</th>
               <th className="px-6 py-3">Position</th>
@@ -127,7 +127,7 @@ const EmployeeTable = ({ employees }: { employees: Employee[] }) => {
                   <img
                     src={employee.profilePicture}
                     alt={employee.name}
-                    className="w-8 h-8 rounded-full object-cover"
+                    className="w-8 h-8 rounded-md object-cover"
                   />
                   <span className="text-neutral-100 font-normal">
                     {employee.name}

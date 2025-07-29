@@ -62,7 +62,6 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({
 
   const queryClient = useQueryClient();
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -178,7 +177,6 @@ const AddPayrollForm: React.FC<AddPayrollFormProps> = ({
     addPayrollMutation.mutate(formData);
   };
 
-  // Filter employees based on search term
   const filteredEmployees = employees.filter(
     (employee) =>
       employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

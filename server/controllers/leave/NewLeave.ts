@@ -2,21 +2,22 @@ import DbClient from "../../prisma/DbCLient";
 import type { Request, Response } from "express";
 
 interface AuthenticatedRequest extends Request {
-  user?: { role: string };
+  user?: { role: string; id: string };
 }
 
 const NewLeave = async (req: AuthenticatedRequest, res: Response) => {
   const role = req.user?.role;
+  const id = req.user?.id;
 
   if (!role || role !== "EMPLOYEE") {
-    return res.status(400).json({ error: "Unauthorized access." });
+    return res.status(401).json({ error: "Unauthorized." });
   }
 
-  const { employeeId, leaveType, startDate, endDate } = req.body;
+  const { reason, startDate, endDate } = req.body;
 
   try {
     const employee = await DbClient.employee.findUnique({
-      where: { id: employeeId },
+      where: { id: id },
     });
 
     if (!employee) {
@@ -25,10 +26,10 @@ const NewLeave = async (req: AuthenticatedRequest, res: Response) => {
 
     const leaveRequest = await DbClient.leave.create({
       data: {
-        employeeId,
-        startDate,
-        endDate,
-        reason: leaveType,
+        employeeId: id as string,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        reason,
         status: "PENDING",
       },
     });

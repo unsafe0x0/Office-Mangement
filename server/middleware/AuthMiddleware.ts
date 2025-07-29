@@ -13,14 +13,14 @@ const AuthMiddleware = (
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Unauthorized access." });
+    return res.status(401).json({ error: "Unauthorized." });
   }
 
   const parts = authHeader.split(" ");
   const token = parts.length === 2 ? parts[1] : null;
 
   if (!token) {
-    return res.status(401).json({ error: "Unauthorized access." });
+    return res.status(401).json({ error: "Unauthorized." });
   }
 
   try {

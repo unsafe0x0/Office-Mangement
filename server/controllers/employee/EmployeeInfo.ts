@@ -10,27 +10,22 @@ const EmployeeInfo = async (req: AuthenticatedRequest, res: Response) => {
   const role = req.user?.role;
 
   if (!id || role !== "EMPLOYEE") {
-    return res.status(400).json({ error: "Unauthorized access." });
+    return res.status(401).json({ error: "Unauthorized." });
   }
 
   try {
     const employee = await DbClient.employee.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        profilePicture: true,
-        phone: true,
-        address: true,
-        position: true,
-        department: true,
-        dateOfJoining: true,
-        dateOfBirth: true,
-        salary: true,
-        attendance: true,
-        leaves: true,
-        payrolls: true,
+      include: {
+        attendance: {
+          orderBy: { date: "desc" },
+        },
+        leaves: {
+          orderBy: { startDate: "desc" },
+        },
+        payrolls: {
+          orderBy: [{ year: "desc" }, { month: "desc" }],
+        },
       },
     });
 
@@ -40,9 +35,7 @@ const EmployeeInfo = async (req: AuthenticatedRequest, res: Response) => {
 
     const tasks = await DbClient.task.findMany({
       where: {
-        employeeIds: {
-          has: id,
-        },
+        employeeIds: { has: id },
       },
       select: {
         id: true,
@@ -57,24 +50,22 @@ const EmployeeInfo = async (req: AuthenticatedRequest, res: Response) => {
 
     const notifications = await DbClient.notification.findMany({
       where: {
-        forWhom: {
-          in: ["ALL", "EMPLOYEE"],
-        },
+        forWhom: { in: ["EMPLOYEE", "ALL"] },
       },
+      orderBy: { createdAt: "desc" },
       select: {
         id: true,
         message: true,
+        forWhom: true,
         createdAt: true,
       },
     });
 
-    const data = {
+    return res.status(200).json({
       employee,
       tasks,
       notifications,
-    };
-
-    return res.status(200).json(data);
+    });
   } catch (error) {
     console.error("Get employee info error:", error);
     return res.status(500).json({ error: "Internal server error." });
